@@ -1,7 +1,10 @@
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-.container {
-  max-width: 500px;
+body {
+  margin: 0;
+  background: #05060f;
 }
