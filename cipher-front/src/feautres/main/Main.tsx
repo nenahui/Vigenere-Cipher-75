@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
-import { Button, Input } from 'antd';
+import { Button, Input, message, Tooltip } from 'antd';
 import TextArea from 'antd/es/input/TextArea';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { Container } from '../../components/Container/Container';
@@ -17,12 +17,13 @@ export const Main: React.FC = () => {
     encode: '',
     password: '',
   });
+  const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     if (encode !== null) {
       setMessages((prevState) => ({
         ...prevState,
-        encode: encode,
+        encode: encode.encoded,
       }));
     }
   }, [encode]);
@@ -31,7 +32,7 @@ export const Main: React.FC = () => {
     if (decode !== null) {
       setMessages((prevState) => ({
         ...prevState,
-        decode: decode,
+        decode: decode.decoded,
       }));
     }
   }, [decode]);
@@ -43,7 +44,14 @@ export const Main: React.FC = () => {
         password: messages.password,
       };
 
-      await dispatch(encodeMessage(message)).unwrap();
+      if (messages.password !== '' && messages.decode !== '') {
+        await dispatch(encodeMessage(message)).unwrap();
+      } else {
+        messageApi.open({
+          type: 'warning',
+          content: 'The password and decode fields cannot be empty',
+        });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -56,7 +64,14 @@ export const Main: React.FC = () => {
         password: messages.password,
       };
 
-      await dispatch(decodeMessage(message)).unwrap();
+      if (messages.password !== '' && messages.encode !== '') {
+        await dispatch(decodeMessage(message)).unwrap();
+      } else {
+        messageApi.open({
+          type: 'warning',
+          content: 'The password and encode fields cannot be empty',
+        });
+      }
     } catch (error) {
       console.error(error);
     }
@@ -75,13 +90,15 @@ export const Main: React.FC = () => {
 
   return (
     <Container>
+      {contextHolder}
       <TextArea
+        allowClear
         rows={5}
         placeholder={'Decoded message…'}
         name={'decode'}
         value={messages.decode}
         onChange={onChange}
-        autoSize
+        style={{ resize: 'none' }}
       />
       <div
         style={{
@@ -92,23 +109,29 @@ export const Main: React.FC = () => {
         }}
       >
         <Input
+          allowClear
           placeholder={'Password…'}
           name={'password'}
           value={messages.password}
           onChange={onChange}
         />
         <div style={{ display: 'flex', gap: '10px' }}>
-          <Button onClick={onDecode} type={'text'} icon={<UpOutlined />} />
-          <Button onClick={onEncode} type={'text'} icon={<DownOutlined />} />
+          <Tooltip title={'Encode'}>
+            <Button onClick={onEncode} type={'text'} icon={<DownOutlined />} />
+          </Tooltip>
+          <Tooltip title={'Decode'}>
+            <Button onClick={onDecode} type={'text'} icon={<UpOutlined />} />
+          </Tooltip>
         </div>
       </div>
       <TextArea
+        allowClear
         rows={5}
         placeholder={'Encoded message…'}
         name={'encode'}
         value={messages.encode}
         onChange={onChange}
-        autoSize
+        style={{ resize: 'none' }}
       />
     </Container>
   );

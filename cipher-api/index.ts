@@ -38,7 +38,9 @@ app.post('/encode', (req, res) => {
 		
 		const cipherText = vigenereCipher(message, password, false);
 		
-		res.send(cipherText);
+		res.send({
+			encoded: cipherText,
+		});
 	} catch (e) {
 		res.status(500).send(e);
 	}
@@ -63,7 +65,9 @@ app.post('/decode', (req, res) => {
 		
 		const decryptedText = vigenereCipher(message, password, true);
 		
-		res.send(decryptedText);
+		res.send({
+			decoded: decryptedText,
+		});
 	} catch (e) {
 		res.status(500).send(e);
 	}

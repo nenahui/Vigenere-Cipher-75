@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
+import type { DecodedMessage, EncodedMessage } from '../../types';
 import { decodeMessage, encodeMessage } from './mainThunks';
 
 export interface mainState {
-  encode: string | null;
-  decode: string | null;
+  encode: EncodedMessage | null;
+  decode: DecodedMessage | null;
   isFetching: boolean;
 }
 
